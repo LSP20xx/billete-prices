@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      - DATABASE_URL=postgres://postgres:tu_contraseña@db:5432/tu_base_de_datos
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:15.1
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: tu_base_de_datos
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: tu_contraseña
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+  redis:
+    image: redis:alpine
+    container_name: redis_server
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - '6379:6379'
+
+volumes:
+  postgres_data:
+  redis_data:
